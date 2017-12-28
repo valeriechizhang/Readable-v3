@@ -7,6 +7,7 @@ import { withRouter } from 'react-router-dom'
 import { loadPosts, loadCategories, loadSinglePost } from '../actions'
 import { openPostModal, closePostModal } from '../actions'
 import { push } from 'react-router-redux'
+import { loadComments } from '../actions'
 
 import PostDetail from './PostDetail'
 
@@ -79,6 +80,7 @@ class PostList extends Component {
     }
 
     render() {
+
         const { categories, posts } = this.props
         const { category, sortAttr } = this.state
 
@@ -117,10 +119,9 @@ class PostList extends Component {
                         </div>
                     </nav>
 
-
                     <div className='post-list'>
                         {posts && (posts.map((post)=>(
-                            <PostDetail key={post.id} post={post}/>
+                            <PostDetail key={post.id} post={post} postPage={false}/>
                         )))}
                     </div>
 
@@ -136,7 +137,8 @@ function mapStateToProps (state) {
     return {
         categories: state.posts.categories,
         posts: state.posts.posts,
-        path: state.route.location.pathname.split('/')[1]
+        path: state.route.location.pathname.split('/')[1],
+        currPost: state.posts.post
     }
 }
 
@@ -145,6 +147,7 @@ function mapDispatchToProps(dispatch) {
         loadCategories: (categories) => dispatch(loadCategories(categories)),
         loadPosts: (posts) => dispatch(loadPosts(posts)),
         loadSinglePost: (post) => dispatch(loadSinglePost(post)),
+        loadComments: (comments) => dispatch(loadComments(comments)),
         openPostModal: () => dispatch(openPostModal()),
         closePostModal: () => dispatch(closePostModal()),
         push: (url) => dispatch(push(url))

@@ -8,7 +8,7 @@ import { votePost, deletePost, loadSinglePost } from '../actions'
 import { openPostModal, closePostModal } from '../actions'
 import { push, goBack } from 'react-router-redux'
 import { openCommentModal } from '../actions'
-import { loadComments } from '../actions'
+import { loadComments, loadSingleComment } from '../actions'
 
 import PostDetail from './PostDetail'
 import Comment from './Comment'
@@ -26,34 +26,38 @@ class PostPage extends Component {
     componentDidMount() {
         API.fetchSinglePost(this.props.path[2])
             .then((response) => {
-                if (response === 'not found') {
-                    this.props.push('/'+this.props.path[1])
+                console.log(response.id)
+                if (response==='not found' || !response.id) {
+                    this.props.push('/')
                 } else {
+                    this.props.loadSinglePost(response)
                     this.setState({post:response})
                 }
             })
+
         this.loadComments()
     }
+
 
     loadComments = () => {
         const postId = this.props.path[2]
         API.fetchPostComments(postId)
             .then((response)=>{
-                console.log(response)
                 this.props.loadComments(response)
             })
     }
 
     beginAddComment = (post) => {
         this.props.loadSinglePost(post)
+        this.props.loadSingleComment(null)
         this.props.openCommentModal()
     }
 
-
     render() {
+
         const { post } = this.state
         const { comments } = this.props
-        console.log(post)
+
         return (
             (post && (
                 <div className='App'>
@@ -62,7 +66,7 @@ class PostPage extends Component {
                             <GoBackIcon size={30}/> Go back
                         </div>
                         <div className='post-list'>
-                            <PostDetail post={post} afterDelete={'/'+this.props.path[1]}/>
+                            <PostDetail postPage={true} afterDelete={'/'+this.props.path[1]}/>
                         </div>
 
                         <div className='row comment'>
@@ -97,9 +101,6 @@ class PostPage extends Component {
                             </div>
                         </Modal>
                     </div>
-
-
-
                 </div>
         )))
     }
@@ -127,6 +128,7 @@ function mapDispatchToProps(dispatch) {
         closePostModal: () => dispatch(closePostModal()),
         openCommentModal: () => dispatch(openCommentModal()),
         loadComments: (comments) => dispatch(loadComments(comments)),
+        loadSingleComment: (comment) => dispatch(loadSingleComment(comment)),
         push: (url) => dispatch(push(url)),
         goBack: () => dispatch(goBack())
     }

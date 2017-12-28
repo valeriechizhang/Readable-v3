@@ -62,8 +62,6 @@ class CommentForm extends Component {
 
 
     submitComment = () => {
-
-
         if (!this.formChecking()) {
             this.setState({ errorMessage: true})
         } else {
@@ -97,7 +95,7 @@ class CommentForm extends Component {
         return (
             <div>
                 <div className='close-icon'>
-                    <CloseIcon size={30} onClick={this.props.closePostModal}/>
+                    <CloseIcon size={30} onClick={this.props.closeCommentModal}/>
                 </div>
                 <form>
                     <div>

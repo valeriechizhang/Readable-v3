@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Switch, Route, withRouter, Redirect } from 'react-router'
+import { Switch, Route, withRouter } from 'react-router'
 import { connect } from 'react-redux'
 import Modal from 'react-modal'
 import '../App.css'
@@ -25,7 +25,7 @@ class App extends Component {
                     <Route exact path='/' component={PostList}/>
                     <Route exact path='/:category' component={PostList}/>
                     <Route exact path='/:category/:post_id' component={PostPage}/>
-                    <Redirect to='/' />
+                    <Route component={PostList} />
                 </ConnectedSwitch>
 
                 <Modal className='edit-modal'

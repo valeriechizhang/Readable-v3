@@ -1,27 +1,4 @@
-import {
-    LOAD_POSTS,
-    LOAD_CATEGORIES,
-    LOAD_SINGLE_POST,
-
-    VOTE_POST,
-    ADD_POST,
-    EDIT_POST,
-    DELETE_POST,
-
-    OPEN_POST_MODAL,
-    CLOSE_POST_MODAL,
-
-    LOAD_COMMENTS,
-    LOAD_SINGLE_COMMENT,
-    VOTE_COMMENT,
-    ADD_COMMENT,
-    EDIT_COMMENT,
-    DELETE_COMMENT,
-
-    OPEN_COMMENT_MODAL,
-    CLOSE_COMMENT_MODAL,
-
-} from '../actions'
+import * as type from '../actions'
 
 
 const initialState = {
@@ -37,38 +14,36 @@ const initialState = {
 
 function postReducer(state=initialState, action) {
     switch(action.type) {
-        case LOAD_CATEGORIES:
+        case type.LOAD_CATEGORIES:
             return {
                 ...state,
                 categories: action.categories.categories
             }
-        case LOAD_POSTS:
+        case type.LOAD_POSTS:
             return {
                 ...state,
                 posts: action.posts
             }
-        case LOAD_SINGLE_POST:
+        case type.LOAD_SINGLE_POST:
             return {
                 ...state,
                 post: action.post
             }
-        case VOTE_POST:
+        case type.VOTE_POST:
             return {
                 ...state,
                 posts: (state.posts.map((post) => {
-                    console.log(post.id, action.postId)
                     if (post.id === action.postId) {
                         if (action.option === 'upVote') {
                             post.voteScore = post.voteScore+1
                         } else {
                             post.voteScore = post.voteScore-1
                         }
-
                     }
                     return post
                 }))
             }
-        case ADD_POST:
+        case type.ADD_POST:
             return {
                 ...state,
                 posts: [
@@ -77,7 +52,7 @@ function postReducer(state=initialState, action) {
                 ],
                 newPostModalOpen: false
             }
-        case EDIT_POST:
+        case type.EDIT_POST:
             return {
                 ...state,
                 post: Object.assign(state.post, {title:action.title, body:action.body}),
@@ -89,23 +64,23 @@ function postReducer(state=initialState, action) {
                     return post
                 }))
             }
-        case DELETE_POST:
+        case type.DELETE_POST:
             return {
                 ...state,
                 post: null,
                 posts: state.posts.filter(post => post.id !== action.postId)
             }
-        case LOAD_COMMENTS:
+        case type.LOAD_COMMENTS:
             return {
                 ...state,
                 comments: action.comments
             }
-        case LOAD_SINGLE_COMMENT:
+        case type.LOAD_SINGLE_COMMENT:
             return {
                 ...state,
                 comment: action.comment
             }
-        case VOTE_COMMENT:
+        case type.VOTE_COMMENT:
             return {
                 ...state,
                 comments: state.comments.map((comment)=>{
@@ -120,15 +95,22 @@ function postReducer(state=initialState, action) {
                     }
                 )
             }
-        case ADD_COMMENT:
+        case type.ADD_COMMENT:
             return {
                 ...state,
                 comments: [
                     ...state.comments,
                     action.comment
-                ]
+                ],
+                post: Object.assign(state.post, state.post.commentCount+1),
+                posts: state.posts.map((post)=>{
+                    if (post.id === action.postId) {
+                        post.commentCount = post.commentCount+1
+                    }
+                    return post
+                })
             }
-        case EDIT_COMMENT:
+        case type.EDIT_COMMENT:
             return {
                 ...state,
                 comments: state.comments.map((comment)=>{
@@ -140,34 +122,39 @@ function postReducer(state=initialState, action) {
                     }
                 )
             }
-        case DELETE_COMMENT:
+        case type.DELETE_COMMENT:
             return {
                 ...state,
                 comment: null,
-                comments: state.comments.filter((comment) => comment.id !== action.commentId)
+                comments: state.comments.filter((comment) => comment.id !== action.commentId),
+                post: Object.assign(state.post, state.post.commentCount-1),
+                posts: state.posts.map((post)=>{
+                    if (post.id === action.postId) {
+                        post.commentCount = post.commentCount-1
+                    }
+                    return post
+                })
             }
-        case OPEN_POST_MODAL:
+        case type.OPEN_POST_MODAL:
             return {
                 ...state,
                 commentModalOpen:false,
                 postModalOpen: true
             }
-        case CLOSE_POST_MODAL:
+        case type.CLOSE_POST_MODAL:
             return {
                 ...state,
-                post: null,
                 postModalOpen: false
             }
-        case OPEN_COMMENT_MODAL:
+        case type.OPEN_COMMENT_MODAL:
             return {
                 ...state,
                 postModalOpen: false,
                 commentModalOpen: true
             }
-        case CLOSE_COMMENT_MODAL:
+        case type.CLOSE_COMMENT_MODAL:
             return {
                 ...state,
-                comment: null,
                 commentModalOpen: false
             }
         default:

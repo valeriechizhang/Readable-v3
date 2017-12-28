@@ -18,13 +18,24 @@ class PostDetail extends Component {
     }
 
     componentDidMount() {
-        this.setState({ post: this.props.post })
+        if (this.props.postPage) {
+            this.props.loadSinglePost(this.props.currPost)
+            this.setState({post:this.props.currPost})
+        } else {
+            this.props.loadSinglePost(null)
+            this.setState({post:this.props.post})
+        }
     }
 
 
     vote = (option) => {
-        API.votePost(this.state.post.id, option)
-        this.props.votePost(this.state.post.id, option)
+        const post = this.state.post
+        API.votePost(post.id, option)
+        this.props.votePost(post.id, option)
+        if (this.props.postPage) {
+            var newVote = (option==='upVote')?this.state.post.voteScore+1:this.state.post.voteScore-1
+            this.setState({post: Object.assign(this.state.post, {voteScore:newVote})})
+        }
     }
 
     beginEdit = () => {
@@ -55,7 +66,8 @@ class PostDetail extends Component {
 
     render() {
 
-        const { post } = this.state
+        const post = this.state.post
+        const comments = this.props.comments
 
         return (
             post && !post.deleted &&
@@ -66,7 +78,7 @@ class PostDetail extends Component {
                         <div>Author: {post.author}</div>
                         <div>Category: {post.category}</div>
                         <div>Created on {Helper.formatDate(post.timestamp)}</div>
-                        <div>Has {post.commentCount} comments</div>
+                        <div>Has {this.props.postPage?comments.length:post.commentCount} comments</div>
 
                         <div className='post-operations'>
                             <button className='btn-op' onClick={this.beginEdit}>Edit</button>
@@ -105,7 +117,8 @@ function mapStateToProps (state) {
     return {
         currPost: state.posts.post,
         posts: state.posts.posts,
-        postModalOpen: state.posts.postModalOpen
+        postModalOpen: state.posts.postModalOpen,
+        comments: state.posts.comments
     }
 }
 

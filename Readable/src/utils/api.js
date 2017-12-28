@@ -5,7 +5,6 @@ const header = {'Authorization':'***'}
 function get(endpoint) {
     return fetch('http://localhost:3001/'+endpoint, {headers: header})
     .then(function(response) {
-        console.log(response)
         if (response.status === 500) {
             return 'not found'
         } else {
